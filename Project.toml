@@ -1,0 +1,4 @@
+name = "DocumenterDocset"
+uuid = "6c6aa8a8-7996-49c7-bb42-8bcee6cacab7"
+authors = ["Sergio Sánchez Ramírez <sergio.sanchez.ramirez@bsc.es>"]
+version = "0.1.0"
