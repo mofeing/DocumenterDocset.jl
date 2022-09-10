@@ -2,6 +2,10 @@ module DocumenterDocset
 
 using Documenter: Documenter, Documents
 using Documenter.Utilities: Selectors
+using Octo: Octo
+using Octo.Adapters.SQLite: SQLite
+using Gumbo
+using Cascadia
 
 export Docset
 
@@ -81,3 +85,66 @@ end)
 </dict>
 </plist>
 """
+
+forkfields(obj, fields, keys, kwargs) = [field ∈ keys ? kwargs[field] : getfield(obj, field) for field in fields]
+
+@generated function fork(x; kwargs...)
+    T = x
+    keys = kwargs.types[1].parameters[1]
+    fields = fieldnames(T)
+
+    quote
+        $T(forkfields(x, $fields, $keys, kwargs)...)
+    end
+end
+
+function render(doc::Documents.Document, settings::Docset)
+    @info "DocumenterDocset: rendering Docset pages."
+
+    docset_path = joinpath(doc.user.build, "$(settings.bundle_name).docset")
+    mkpath(joinpath(docset_path, "Contents", "Resources", "Documents"))
+
+    # generate Info.plist file
+    open(joinpath(docset_path, "Contents", "Info.plist"), "w") do fh
+        text = infoplist(settings)
+        write(fh, text)
+    end
+
+    # render HTML pages
+    html_path = joinpath(doc.user.build, docset_path, "Contents", "Resources", "Documents")
+    doc_html = fork(doc, user=fork(doc.user, build=html_path))
+    render(doc_html, settings.html_writer)
+
+    # create SQLite index
+    Octo.Repo.connect(adapter=SQLite, dbfile=joinpath(docset_path, "Contents", "Resources", "docSet.dsidx"))
+
+    Octo.Repo.execute(Raw("CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT)"))
+    Octo.Repo.execute(Raw("CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path)"))
+
+    # populate index
+    for (root, dirs, files) in walkdir(html_path)
+        filter!(x -> endswith(".html", x), files)
+        rel_path = chopprefix(root, html_path)
+
+        for file in files
+            html_file_path = joinpath(rel_path, file)
+            html = parsehtml(read(path, String))
+
+            for elem in eachmatch(sel".docstring", html.root)
+                binding = Cascadia.matchFirst(sel".docstring-binding", elem)
+                name = binding.attributes["id"]
+
+                href = binding.attributes["href"]
+                path = join(html_file_path, "$href")
+
+                type = text(Cascadia.matchFirst(sel".docstring-category", elem))
+
+                Octo.Repo.execute(Raw("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ($name, $type, $path)"))
+            end
+        end
+    end
+
+    Octo.Repo.disconnect()
+end
+
+end
