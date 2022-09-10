@@ -2,7 +2,7 @@ module DocumenterDocset
 
 using Documenter: Documenter, Documents
 using Documenter.Utilities: Selectors
-using Octo: Octo
+using Octo: Octo, Raw
 using Octo.Adapters.SQLite: SQLite
 using Gumbo
 using Cascadia
