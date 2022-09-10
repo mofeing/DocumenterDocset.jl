@@ -30,7 +30,7 @@ struct Docset <: Documenter.Writer
     fts::Bool # DOC full-text search enabled
     fts_forbidden::Bool # DOC enforce full-text search ban
 
-    html_writer::Documenter.Writers.HTML
+    html_writer::Documenter.Writers.HTMLWriter.HTML
 
     function Docset(bundle_id, bundle_name, platform_family;
         icon=nothing,
@@ -42,7 +42,7 @@ struct Docset <: Documenter.Writer
         fts=false,
         fts_forbidden=false,
         html_options...)
-        new(bundle_id, bundle_name, platform_family, icon, icon_retina, index, fallback_url, playground, allow_js, fts, fts_forbidden, HTML(html_options...))
+        new(bundle_id, bundle_name, platform_family, icon, icon_retina, index, fallback_url, playground, allow_js, fts, fts_forbidden, Documenter.Writers.HTMLWriter.HTML(html_options...))
     end
 end
 
@@ -119,7 +119,7 @@ function render(doc::Documents.Document, settings::Docset)
     @info "DocumenterDocset: rendering HTML pages."
     html_path = joinpath(doc.user.build, docset_path, "Contents", "Resources", "Documents")
     doc_html = fork(doc, user=fork(doc.user, build=html_path))
-    render(doc_html, settings.html_writer)
+    Documenter.Writers.HTMLWriter.render(doc_html, settings.html_writer)
 
     # create SQLite index
     @info "DocumenterDocset: populating SQLite index."
