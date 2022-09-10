@@ -33,16 +33,16 @@ struct Docset <: Documenter.Writer
     html_writer::Documenter.Writers.HTML
 
     function Docset(bundle_id, bundle_name, platform_family;
-        index=nothing,
         icon=nothing,
         icon_retina=nothing,
+        index=nothing,
         fallback_url=nothing,
         playground=nothing,
         allow_js=false,
         fts=false,
         fts_forbidden=false,
         html_options...)
-        new(bundle_id, bundle_name, platform_family, icon, icon_retina, fallback_url, playground, allow_js, fts, fts_forbidden, HTML(html_options...))
+        new(bundle_id, bundle_name, platform_family, icon, icon_retina, index, fallback_url, playground, allow_js, fts, fts_forbidden, HTML(html_options...))
     end
 end
 
