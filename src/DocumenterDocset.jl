@@ -61,26 +61,32 @@ infoplist(D::Docset) = """<?xml version="1.0" encoding="UTF-8"?>
 $(if !isnothing(D.index)
 """<key>dashIndexFilePath</key>
 <string>$(D.index)</string>"""
+else ""
 end)
 $(if !isnothing(D.fallback_url)
 """<key>DashDocSetFallbackURL</key>
 <string>$(D.fallback_url)</string>"""
+else ""
 end)
 $(if !isnothing(D.playground)
 """<key>DashDocSetPlayURL</key>
 <string>$(D.playground)</key>"""
+else ""
 end)
 $(if D.allow_js
 """<key>isJavaScriptEnabled</key>
 <true/>"""
+else ""
 end)
 $(if D.fts
 """<key>DashDocSetDefaultFTSEnabled</key>
 <true/>"""
+else ""
 end)
 $(if D.fts_forbidden
 """<key>DashDocSetFTSNotSupported</key>
 <true/>"""
+else ""
 end)
 </dict>
 </plist>
