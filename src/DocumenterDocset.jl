@@ -105,23 +105,24 @@ forkfields(obj, fields, keys, kwargs) = [field ∈ keys ? kwargs[field] : getfie
 end
 
 function render(doc::Documents.Document, settings::Docset)
-    @info "DocumenterDocset: rendering Docset pages."
-
     docset_path = joinpath(doc.user.build, "$(settings.bundle_name).docset")
     mkpath(joinpath(docset_path, "Contents", "Resources", "Documents"))
 
     # generate Info.plist file
+    @info "DocumenterDocset: generating `Info.plist`."
     open(joinpath(docset_path, "Contents", "Info.plist"), "w") do fh
         text = infoplist(settings)
         write(fh, text)
     end
 
     # render HTML pages
+    @info "DocumenterDocset: rendering HTML pages."
     html_path = joinpath(doc.user.build, docset_path, "Contents", "Resources", "Documents")
     doc_html = fork(doc, user=fork(doc.user, build=html_path))
     render(doc_html, settings.html_writer)
 
     # create SQLite index
+    @info "DocumenterDocset: populating SQLite index."
     Octo.Repo.connect(adapter=SQLite, dbfile=joinpath(docset_path, "Contents", "Resources", "docSet.dsidx"))
 
     Octo.Repo.execute(Raw("CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT)"))
