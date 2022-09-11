@@ -147,7 +147,7 @@ function render(doc::Documents.Document, settings::Docset)
 
                 type = text(Cascadia.matchFirst(sel".docstring-category", elem))
 
-                Octo.Repo.execute(Raw("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ($name, $type, $path)"))
+                Octo.Repo.execute(Raw("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('$name', '$type', '$path')"))
             end
         end
     end
