@@ -130,19 +130,20 @@ function render(doc::Documents.Document, settings::Docset)
 
     # populate index
     for (root, dirs, files) in walkdir(html_path)
-        filter!(x -> endswith(".html", x), files)
-        rel_path = chopprefix(root, html_path)
+        filter!(x -> endswith(x, ".html"), files)
+        rel_path = relpath(root, html_path)
 
         for file in files
-            html_file_path = joinpath(rel_path, file)
-            html = parsehtml(read(path, String))
+            html_file_relpath = joinpath(rel_path, file)
+            html_file_abspath = joinpath(root, file)
+            html = parsehtml(read(html_file_abspath, String))
 
             for elem in eachmatch(sel".docstring", html.root)
                 binding = Cascadia.matchFirst(sel".docstring-binding", elem)
                 name = binding.attributes["id"]
 
                 href = binding.attributes["href"]
-                path = join(html_file_path, "$href")
+                path = join([html_file_relpath, href])
 
                 type = text(Cascadia.matchFirst(sel".docstring-category", elem))
 
