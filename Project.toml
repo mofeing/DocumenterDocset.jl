@@ -1,7 +1,7 @@
 name = "DocumenterDocset"
 uuid = "6c6aa8a8-7996-49c7-bb42-8bcee6cacab7"
 authors = ["Sergio Sánchez Ramírez <sergio.sanchez.ramirez@bsc.es>"]
-version = "0.1.0"
+version = "0.0.1"
 
 [deps]
 Cascadia = "54eefc05-d75b-58de-a785-1a3403f0919f"
