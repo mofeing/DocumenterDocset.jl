@@ -117,7 +117,7 @@ function render(doc::Documents.Document, settings::Docset)
 
     # render HTML pages
     @info "DocumenterDocset: rendering HTML pages."
-    html_path = joinpath(doc.user.build, docset_path, "Contents", "Resources", "Documents")
+    html_path = joinpath(docset_path, "Contents", "Resources", "Documents")
     doc_html = fork(doc, user=fork(doc.user, build=html_path))
     Documenter.Writers.HTMLWriter.render(doc_html, settings.html_writer)
 
