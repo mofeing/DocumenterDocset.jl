@@ -11,4 +11,9 @@ Octo = "16905944-f982-529b-abb2-b839f98f160b"
 SQLite = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
 
 [compat]
+Cascadia = "1"
+Documenter = "0.27"
+Gumbo = "0.8"
+Octo = "0.2.3"
+SQLite = "1.4"
 julia = "1.6"
