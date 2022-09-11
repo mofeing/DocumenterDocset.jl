@@ -42,7 +42,9 @@ struct Docset <: Documenter.Writer
         fts=false,
         fts_forbidden=false,
         html_options...)
-        new(bundle_id, bundle_name, platform_family, icon, icon_retina, index, fallback_url, playground, allow_js, fts, fts_forbidden, Documenter.Writers.HTMLWriter.HTML(html_options...))
+        haskey(html_options, :prettyurls) && @warn "`prettyurls` is not customizable. Set to `false`."
+
+        new(bundle_id, bundle_name, platform_family, icon, icon_retina, index, fallback_url, playground, allow_js, fts, fts_forbidden, Documenter.Writers.HTMLWriter.HTML(prettyurls=false, html_options...))
     end
 end
 
