@@ -138,6 +138,8 @@ function render(doc::Documents.Document, settings::Docset)
             html_file_abspath = joinpath(root, file)
             html = parsehtml(read(html_file_abspath, String))
 
+            # register Types, Functions, Methods, ...
+            # TODO Constants?
             for elem in eachmatch(sel".docstring", html.root)
                 binding = Cascadia.matchFirst(sel".docstring-binding", elem)
                 name = binding.attributes["id"]
@@ -146,6 +148,18 @@ function render(doc::Documents.Document, settings::Docset)
                 path = join([html_file_relpath, href])
 
                 type = text(Cascadia.matchFirst(sel".docstring-category", elem))
+
+                Octo.Repo.execute(Raw("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('$name', '$type', '$path')"))
+            end
+
+            # register sections
+            for elem in eachmatch(sel".docs-heading-anchor", html.root)
+                name = text(elem)
+
+                href = elem.attributes["href"]
+                path = join([html_file_relpath, href])
+
+                type = "Section"
 
                 Octo.Repo.execute(Raw("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('$name', '$type', '$path')"))
             end
